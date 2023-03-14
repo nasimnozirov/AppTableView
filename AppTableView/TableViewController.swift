@@ -10,11 +10,12 @@ import UIKit
 class TableViewController: UITableViewController {
 
     private var dataCar = ["MERCEDES", "BMW", "FERRARI", "JAGUAR", "MAZDA", "MUSTANG", "TESLA", "VOLKSWAGEN"]
-    
+    private var textF = ""с
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.rowHeight = 145
         createEditingButton()
+        
     }
 
     // MARK: - Table view data source
@@ -49,13 +50,18 @@ class TableViewController: UITableViewController {
             self.dataCar.remove(at: indexPath.row)
             tableView.reloadData()
         })
-        return UISwipeActionsConfiguration(actions: [deleteAction])
+        
+        let editAction = UIContextualAction(style: .normal, title: "Edit", handler: { _,_,_ in
+            self.showAlert(title: "Edit name", IndexPath: indexPath)
+            tableView.reloadData()
+        })
+        return UISwipeActionsConfiguration(actions: [deleteAction, editAction])
     }
     
-    // без этого кнопки не видно будет
-    override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
-        return .none
-    }
+   //дополнительная функция удалене итд с левой части экрана появляется
+//    override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+//        return
+//    }
     
     //МЕНЯЕМ МЕСТАМИ ЯЧЕЙКИ
     override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
@@ -82,4 +88,27 @@ class TableViewController: UITableViewController {
         createEditingButton()
     }
    
+}
+
+extension TableViewController {
+    private func showAlert(title: String, IndexPath: IndexPath) {
+
+        let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "Ok", style: .default) { text in
+            self.dataCar[IndexPath.row] = self.textF
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+        
+        alert.addTextField { textField in
+            textField.placeholder = "Text"
+            if let newText = textField.text {
+                self.textF = newText
+                print(self.textF)
+            }
+        }
+        alert.addAction(okAction)
+        alert.addAction(cancelAction)
+        
+       present(alert, animated: true)
+    }
 }
