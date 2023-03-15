@@ -10,10 +10,11 @@ import UIKit
 class TableViewController: UITableViewController {
 
     private var dataCar = ["MERCEDES", "BMW", "FERRARI", "JAGUAR", "MAZDA", "MUSTANG", "TESLA", "VOLKSWAGEN"]
-    private var textF = ""с
+   
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.rowHeight = 145
+        createAddButton()
         createEditingButton()
         
     }
@@ -39,6 +40,7 @@ class TableViewController: UITableViewController {
         configuration.image = UIImage(named: car)
         configuration.textProperties.alignment = .natural
         configuration.imageProperties.cornerRadius = tableView.rowHeight / 2
+        
         cell.contentConfiguration = configuration
 
         return cell
@@ -52,30 +54,36 @@ class TableViewController: UITableViewController {
         })
         
         let editAction = UIContextualAction(style: .normal, title: "Edit", handler: { _,_,_ in
-            self.showAlert(title: "Edit name", IndexPath: indexPath)
+            self.showAlert(title: "Edit name")
             tableView.reloadData()
         })
         return UISwipeActionsConfiguration(actions: [deleteAction, editAction])
     }
     
    //дополнительная функция удалене итд с левой части экрана появляется
-//    override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
-//        return
-//    }
+     override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+         return .none
+    }
+    // чтобы ячейки не сдивигались
+    override func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
+        return false
+    }
     
-    //МЕНЯЕМ МЕСТАМИ ЯЧЕЙКИ
+    //МЕНЯЕМ МЕСТАМИ ЯЧЕЙКИ местами
     override func tableView(_ tableView: UITableView, moveRowAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         let moveObject = self.dataCar[sourceIndexPath.row]  // ОТСЮДА БЕРЕМ СТРОКУ
         dataCar.remove(at: sourceIndexPath.row)  // СДЕСЬ УДАЛЯЕМ
         dataCar.insert(moveObject, at: destinationIndexPath.row)  // А СДЕСЬ ДОБАВЛЯЕМ И ТАК МИ ПОМЕНЯЛИ МЕСТАМИ :)
     }
     
+  
+    
     // СОЗДАЕМ КНОПКУ и прикручиваем
     private func createEditingButton() {
         let editButton = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(beginEditing))
         navigationItem.rightBarButtonItem = editButton
     }
-
+   
     // меняем кнопку и делаем его изменяемий, что соверщать какие-то действие
     @objc private func beginEditing() {
         tableView.isEditing = true
@@ -87,23 +95,38 @@ class TableViewController: UITableViewController {
         tableView.isEditing = false
         createEditingButton()
     }
-   
+    
+    private func createAddButton() {
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(editing))
+        navigationItem.leftBarButtonItem = addButton
+    }
+
+  @objc private func editing() {
+      showAlert(title: "Add new car")
+      tableView.reloadData()
+    }
+
+    @objc private func end() {
+        createAddButton()
+    }
 }
 
 extension TableViewController {
-    private func showAlert(title: String, IndexPath: IndexPath) {
-
+    private func showAlert(title: String) {
+       var textF = ""
         let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
         let okAction = UIAlertAction(title: "Ok", style: .default) { text in
-            self.dataCar[IndexPath.row] = self.textF
+            self.dataCar.append(textF)
+            self.tableView.reloadData()
+//            self.dataCar[IndexPath.row] = self.textF
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
         
         alert.addTextField { textField in
             textField.placeholder = "Text"
             if let newText = textField.text {
-                self.textF = newText
-                print(self.textF)
+                textF = newText
+                print(textF)
             }
         }
         alert.addAction(okAction)
