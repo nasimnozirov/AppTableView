@@ -8,9 +8,9 @@
 import UIKit
 
 class TableViewController: UITableViewController {
-
+    
     private var dataCar = ["MERCEDES", "BMW", "FERRARI", "JAGUAR", "MAZDA", "MUSTANG", "TESLA", "VOLKSWAGEN"]
-   
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.rowHeight = 145
@@ -18,14 +18,14 @@ class TableViewController: UITableViewController {
         createEditingButton()
         
     }
-
+    
     // MARK: - Table view data source
-
+    
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return dataCar.count
     }
-
-
+    
+    
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell:  UITableViewCell
         if let reuseCell = tableView.dequeueReusableCell(withIdentifier: "cell") {
@@ -42,7 +42,7 @@ class TableViewController: UITableViewController {
         configuration.imageProperties.cornerRadius = tableView.rowHeight / 2
         
         cell.contentConfiguration = configuration
-
+        
         return cell
     }
     
@@ -60,9 +60,9 @@ class TableViewController: UITableViewController {
         return UISwipeActionsConfiguration(actions: [deleteAction, editAction])
     }
     
-   //дополнительная функция удалене итд с левой части экрана появляется
-     override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
-         return .none
+    //дополнительная функция удалене итд с левой части экрана появляется
+    override func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCell.EditingStyle {
+        return .none
     }
     // чтобы ячейки не сдивигались
     override func tableView(_ tableView: UITableView, shouldIndentWhileEditingRowAt indexPath: IndexPath) -> Bool {
@@ -76,14 +76,14 @@ class TableViewController: UITableViewController {
         dataCar.insert(moveObject, at: destinationIndexPath.row)  // А СДЕСЬ ДОБАВЛЯЕМ И ТАК МИ ПОМЕНЯЛИ МЕСТАМИ :)
     }
     
-  
+    
     
     // СОЗДАЕМ КНОПКУ и прикручиваем
     private func createEditingButton() {
         let editButton = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(beginEditing))
         navigationItem.rightBarButtonItem = editButton
     }
-   
+    
     // меняем кнопку и делаем его изменяемий, что соверщать какие-то действие
     @objc private func beginEditing() {
         tableView.isEditing = true
@@ -100,12 +100,12 @@ class TableViewController: UITableViewController {
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(editing))
         navigationItem.leftBarButtonItem = addButton
     }
-
-  @objc private func editing() {
-      showAlert(title: "Add new car")
-      tableView.reloadData()
+    
+    @objc private func editing() {
+        showAlert(title: "Add new car")
+        tableView.reloadData()
     }
-
+    
     @objc private func end() {
         createAddButton()
     }
@@ -113,12 +113,12 @@ class TableViewController: UITableViewController {
 
 extension TableViewController {
     private func showAlert(title: String) {
-       var textF = ""
+        var textF = ""
         let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
         let okAction = UIAlertAction(title: "Ok", style: .default) { text in
             self.dataCar.append(textF)
             self.tableView.reloadData()
-//            self.dataCar[IndexPath.row] = self.textF
+            //            self.dataCar[IndexPath.row] = self.textF
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
         
@@ -132,6 +132,6 @@ extension TableViewController {
         alert.addAction(okAction)
         alert.addAction(cancelAction)
         
-       present(alert, animated: true)
+        present(alert, animated: true)
     }
 }
