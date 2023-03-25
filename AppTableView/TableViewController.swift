@@ -11,12 +11,14 @@ class TableViewController: UITableViewController {
     
     private var dataCar = ["MERCEDES", "BMW", "FERRARI", "JAGUAR", "MAZDA", "MUSTANG", "TESLA", "VOLKSWAGEN"]
     
+    private var imageDict: [String: UIImage] = [:]
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.rowHeight = 145
         createAddButton()
         createEditingButton()
-        
+        prepareImageDict()
     }
     
     // MARK: - Table view data source
@@ -37,7 +39,9 @@ class TableViewController: UITableViewController {
         var configuration = cell.defaultContentConfiguration()
         let car = dataCar[indexPath.row]
         configuration.text = car
-        configuration.image = UIImage(named: car)
+        if let image = imageDict[car.uppercased()] {
+            configuration.image = image
+        }
         configuration.textProperties.alignment = .natural
         configuration.imageProperties.cornerRadius = tableView.rowHeight / 2
         
@@ -54,7 +58,7 @@ class TableViewController: UITableViewController {
         })
         
         let editAction = UIContextualAction(style: .normal, title: "Edit", handler: { _,_,_ in
-            self.showAlert(title: "Edit name")
+            self.showAlert(title: "Edit name", indexPath: indexPath)
             tableView.reloadData()
         })
         return UISwipeActionsConfiguration(actions: [deleteAction, editAction])
@@ -76,7 +80,13 @@ class TableViewController: UITableViewController {
         dataCar.insert(moveObject, at: destinationIndexPath.row)  // А СДЕСЬ ДОБАВЛЯЕМ И ТАК МИ ПОМЕНЯЛИ МЕСТАМИ :)
     }
     
-    
+    private func prepareImageDict() {
+        for item in 0..<dataCar.count {
+            let key = dataCar[item]
+            let value = UIImage(named: key)
+            imageDict[key] = value
+        }
+    }
     
     // СОЗДАЕМ КНОПКУ и прикручиваем
     private func createEditingButton() {
@@ -103,7 +113,6 @@ class TableViewController: UITableViewController {
     
     @objc private func editing() {
         showAlert(title: "Add new car")
-        tableView.reloadData()
     }
     
     @objc private func end() {
@@ -113,21 +122,38 @@ class TableViewController: UITableViewController {
 
 extension TableViewController {
     private func showAlert(title: String) {
-        var textF = ""
+       
         let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
-        let okAction = UIAlertAction(title: "Ok", style: .default) { text in
-            self.dataCar.append(textF)
+        let okAction = UIAlertAction(title: "Ok", style: .default) { _ in
+            guard let carName = alert.textFields?.first?.text else { return }
+            self.dataCar.append(carName)
             self.tableView.reloadData()
-            //            self.dataCar[IndexPath.row] = self.textF
+          
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
         
         alert.addTextField { textField in
             textField.placeholder = "Text"
-            if let newText = textField.text {
-                textF = newText
-                print(textF)
-            }
+        }
+        alert.addAction(okAction)
+        alert.addAction(cancelAction)
+        
+        present(alert, animated: true)
+    }
+    
+    private func showAlert(title: String, indexPath: IndexPath) {
+       
+        let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "Ok", style: .default) { _ in
+            guard let carName = alert.textFields?.first?.text else { return }
+            self.dataCar[indexPath.row] = carName
+            self.tableView.reloadData()
+          
+        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
+        
+        alert.addTextField { textField in
+            textField.placeholder = "Text"
         }
         alert.addAction(okAction)
         alert.addAction(cancelAction)
